@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Owen's Expenses">
 <link id="favIcon" rel="icon" type="image/png">
 <link id="appleIcon" rel="apple-touch-icon" sizes="180x180">
-<title>Owen's Expense Tracker</title>
+<title>Owen's Expense & Income Tracker</title>
 <script>
 (function(){
   const c=document.createElement('canvas');
@@ -19,26 +19,22 @@
   ctx.fillStyle='#141614';
   ctx.fillRect(0,0,512,512);
 
-  // Subtle green accent ring
   ctx.strokeStyle='#2c4734';
   ctx.lineWidth=12;
   ctx.beginPath();
   ctx.roundRect(28,28,456,456,96);
   ctx.stroke();
 
-  // Wallet / Receipt minimalist icon
   ctx.strokeStyle='#ffffff';
   ctx.fillStyle='#ffffff';
   ctx.lineWidth=16;
   ctx.lineCap='round';
   ctx.lineJoin='round';
 
-  // Wallet body
   ctx.beginPath();
   ctx.roundRect(116,164,280,204,34);
   ctx.stroke();
 
-  // Top flap
   ctx.beginPath();
   ctx.moveTo(144,164);
   ctx.lineTo(144,136);
@@ -48,7 +44,6 @@
   ctx.lineTo(356,164);
   ctx.stroke();
 
-  // Card clasp on right
   ctx.fillStyle='#141614';
   ctx.beginPath();
   ctx.roundRect(312,232,96,68,18);
@@ -60,7 +55,6 @@
   ctx.arc(346,266,12,0,Math.PI*2);
   ctx.fill();
 
-  // Downward spend arrow accent
   ctx.strokeStyle='#72d69a';
   ctx.beginPath();
   ctx.moveTo(212,226);
@@ -142,9 +136,20 @@ main{
 .pill.warn{background:#3d3219;color:#f7d46b}
 .pill.over{background:#422020;color:#ff9e9e}
 
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .stat{background:#121813;padding:13px;border-radius:14px;text-align:left}
-.stat strong{display:block;font-size:16px;margin-top:5px}
+.stat strong{display:block;font-size:15px;margin-top:5px}
+
+.mode-switch{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;
+  background:#121813;padding:5px;border-radius:14px;border:1px solid #2b362d;
+}
+.mode-btn{
+  background:transparent;color:var(--muted);padding:10px 12px;border-radius:10px;
+  font-size:13px;font-weight:800;
+}
+.mode-btn.active.exp{background:#3a2121;color:#ffb4b4}
+.mode-btn.active.inc{background:#203d2a;color:#a9f0c0}
 
 h2{font-size:15px;margin:0 0 14px}
 .field{margin:12px 0}
@@ -179,18 +184,17 @@ input:focus,select:focus{border-color:var(--green)}
 
 button{border:0;border-radius:13px;padding:14px 16px;font-size:14px;font-weight:800;cursor:pointer}
 .primary{background:var(--green);color:#102016;width:100%;margin-top:10px}
+.primary.income-mode{background:#8ae2ad;color:#0e2216}
 .primary:active{opacity:.9}
 .secondary{background:#28332a;color:#e8f1e9}
 .danger{background:#402525;color:#ffc1c1}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 
-/* Category Breakdown */
 .cat-bars{display:flex;flex-direction:column;gap:11px}
 .cat-row-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
 .mini-bar{height:7px;background:#121813;border-radius:99px;overflow:hidden}
 .mini-fill{height:100%;background:var(--green);border-radius:99px;transition:width .25s}
 
-/* Filter tabs */
 .filter-scroll{
   display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;
   scrollbar-width:none;
@@ -202,7 +206,6 @@ button{border:0;border-radius:13px;padding:14px 16px;font-size:14px;font-weight:
 }
 .ftab.active{background:#203d2a;border-color:#427d57;color:#a9f0c0}
 
-/* Daily grouped history */
 .day-group{margin-top:14px}
 .day-group:first-child{margin-top:4px}
 .day-header{
@@ -210,7 +213,8 @@ button{border:0;border-radius:13px;padding:14px 16px;font-size:14px;font-weight:
   background:#121813;padding:8px 12px;border-radius:10px;
   font-size:12px;font-weight:800;color:#cdebd6;margin-bottom:4px;
 }
-.day-header span.day-total{color:#ff9e9e}
+.day-net.pos{color:#a9f0c0}
+.day-net.neg{color:#ff9e9e}
 .history{list-style:none;padding:0;margin:0}
 .history li{
   display:flex;justify-content:space-between;align-items:center;gap:10px;
@@ -226,6 +230,7 @@ button{border:0;border-radius:13px;padding:14px 16px;font-size:14px;font-weight:
 .tx-title{font-size:14px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tx-sub{color:var(--muted);font-size:11px;margin-top:2px}
 .tx-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.positive{color:#a9f0c0;font-weight:800;font-size:14px}
 .negative{color:#ff9e9e;font-weight:800;font-size:14px}
 .del-btn{
   background:#281c1c;color:#ff9e9e;width:26px;height:26px;border-radius:8px;
@@ -234,7 +239,6 @@ button{border:0;border-radius:13px;padding:14px 16px;font-size:14px;font-weight:
 .empty{color:var(--muted);text-align:center;padding:22px 0;font-size:13px}
 .footer{text-align:center;color:#7f8a80;font-size:11px;padding:15px}
 
-/* Modal / Inline Add Category */
 .add-cat-box{
   display:none;background:#121813;border:1px solid #354437;
   border-radius:14px;padding:12px;margin-top:10px;
@@ -246,10 +250,10 @@ button{border:0;border-radius:13px;padding:14px 16px;font-size:14px;font-weight:
 <body>
 <main>
   <header class="top">
-    <div class="eyebrow">MONTHLY &amp; DAILY EXPENSE TRACKER</div>
+    <div class="eyebrow">INCOME, DAILY &amp; MONTHLY EXPENSE TRACKER</div>
     <div class="pig">💸</div>
     <div class="title">OWEN'S EXPENSES</div>
-    <div class="sub">Track daily. Control monthly.</div>
+    <div class="sub">Track salary &amp; daily spend. Control monthly.</div>
     <div class="month-nav">
       <button class="month-btn" id="prevMonth" aria-label="Bulan sebelumnya">◀</button>
       <div class="month-label" id="monthLabel">-</div>
@@ -263,17 +267,29 @@ button{border:0;border-radius:13px;padding:14px 16px;font-size:14px;font-weight:
     <div class="amount" id="totalSpent">Rp0</div>
     <div class="row">
       <span class="pill" id="budgetPill">0% BUDGET</span>
-      <span class="muted" id="remainingBudget">Sisa Rp3.000.000</span>
+      <span class="muted" id="remainingBudget">Sisa budget Rp3.000.000</span>
     </div>
     <div class="bar"><div class="fill" id="fill"></div></div>
     <div class="row muted">
-      <span id="dailyAvgLabel">Rata-rata Rp0/hari</span>
+      <span id="dailyAvgLabel">Rata-rata Rp0/hari aktif</span>
       <span id="budgetLabel">Budget Rp3.000.000</span>
     </div>
+
     <div class="stats">
       <div class="stat">
+        <span class="muted">💰 Income / Salary Bulan Ini</span>
+        <strong id="totalIncome" style="color:#a9f0c0">Rp0</strong>
+      </div>
+      <div class="stat">
+        <span class="muted">⚖️ Sisa Income (Net)</span>
+        <strong id="netCashflow">Rp0</strong>
+      </div>
+    </div>
+
+    <div class="stats" style="margin-top:10px">
+      <div class="stat">
         <span class="muted">📅 Pengeluaran Hari Ini</span>
-        <strong id="todaySpent" style="color:#a9f0c0">Rp0</strong>
+        <strong id="todaySpent" style="color:#ff9e9e">Rp0</strong>
       </div>
       <div class="stat">
         <span class="muted">🧾 Total Transaksi</span>
@@ -282,38 +298,63 @@ button{border:0;border-radius:13px;padding:14px 16px;font-size:14px;font-weight:
     </div>
   </section>
 
-  <!-- ADD EXPENSE CARD -->
+  <!-- ADD TRANSACTION CARD (EXPENSE / INCOME) -->
   <section class="card">
-    <h2>➕ Catat pengeluaran</h2>
+    <div class="mode-switch">
+      <button type="button" class="mode-btn active exp" id="modeExpense">➖ Pengeluaran</button>
+      <button type="button" class="mode-btn inc" id="modeIncome">➕ Income / Salary</button>
+    </div>
 
-    <div class="field">
-      <label>Pilih Kategori</label>
-      <div class="cat-grid" id="catGrid"></div>
-      <div class="add-cat-box" id="addCatBox">
-        <label style="margin-bottom:6px">Tambah Kategori Custom</label>
-        <div class="add-cat-row">
-          <input id="newCatIcon" type="text" maxlength="2" value="☕" style="text-align:center;padding:10px">
-          <input id="newCatName" type="text" placeholder="Nama kategori (mis: Ngopi)">
-          <button class="secondary" id="saveCatBtn" style="padding:10px 14px">Simpan</button>
+    <h2 id="formHeading">Catat pengeluaran</h2>
+
+    <div id="expenseCatSection">
+      <div class="field">
+        <label>Pilih Kategori Pengeluaran</label>
+        <div class="cat-grid" id="catGrid"></div>
+        <div class="add-cat-box" id="addCatBox">
+          <label style="margin-bottom:6px">Tambah Kategori Custom</label>
+          <div class="add-cat-row">
+            <input id="newCatIcon" type="text" maxlength="2" value="☕" style="text-align:center;padding:10px">
+            <input id="newCatName" type="text" placeholder="Nama kategori (mis: Ngopi)">
+            <button class="secondary" id="saveCatBtn" style="padding:10px 14px">Simpan</button>
+          </div>
         </div>
       </div>
     </div>
 
+    <div id="incomeSourceSection" style="display:none">
+      <div class="field">
+        <label for="incomeSource">Sumber Income / Salary</label>
+        <select id="incomeSource">
+          <option value="Salary / Gaji">💼 Salary / Gaji</option>
+          <option value="Tips / Bonus">✨ Tips / Bonus</option>
+          <option value="Freelance / Side Job">⚡ Freelance / Side Job</option>
+          <option value="Lainnya">💵 Pemasukan Lainnya</option>
+        </select>
+      </div>
+    </div>
+
     <div class="field">
-      <label for="amount">Nominal pengeluaran (Rupiah)</label>
+      <label for="amount" id="amountLabel">Nominal pengeluaran (Rupiah)</label>
       <input id="amount" type="number" min="1" step="500" inputmode="numeric" placeholder="Contoh: 25000">
-      <div class="quick-chips">
+      <div class="quick-chips" id="expenseChips">
         <button type="button" class="chip" data-add="5000">+5rb</button>
         <button type="button" class="chip" data-add="10000">+10rb</button>
         <button type="button" class="chip" data-add="20000">+20rb</button>
         <button type="button" class="chip" data-add="50000">+50rb</button>
         <button type="button" class="chip" data-add="100000">+100rb</button>
       </div>
+      <div class="quick-chips" id="incomeChips" style="display:none">
+        <button type="button" class="chip" data-add="500000">+500rb</button>
+        <button type="button" class="chip" data-add="1000000">+1jt</button>
+        <button type="button" class="chip" data-add="2000000">+2jt</button>
+        <button type="button" class="chip" data-add="3000000">+3jt</button>
+      </div>
     </div>
 
     <div class="field">
       <label for="note">Catatan singkat (opsional)</label>
-      <input id="note" type="text" placeholder="Misal: Pertamax, Nasi padang, Rokok, dll.">
+      <input id="note" type="text" id="noteInput" placeholder="Misal: Gaji bulanan, Pertamax, Makan siang...">
     </div>
 
     <div class="field">
@@ -327,22 +368,22 @@ button{border:0;border-radius:13px;padding:14px 16px;font-size:14px;font-weight:
   <!-- CATEGORY BREAKDOWN -->
   <section class="card">
     <div class="row" style="margin-bottom:14px">
-      <h2 style="margin:0">📊 Ringkasan per kategori</h2>
+      <h2 style="margin:0">📊 Ringkasan kategori pengeluaran</h2>
       <span class="muted" id="topCatBadge">-</span>
     </div>
     <div class="cat-bars" id="catBars"></div>
-    <div class="empty" id="catEmpty" style="padding:10px 0">Belum ada data kategori bulan ini.</div>
+    <div class="empty" id="catEmpty" style="padding:10px 0">Belum ada data pengeluaran bulan ini.</div>
   </section>
 
   <!-- DAILY GROUPED HISTORY -->
   <section class="card">
     <div class="row" style="margin-bottom:12px">
       <h2 style="margin:0">🧾 Riwayat Harian (Daily)</h2>
-      <span class="muted">Per tanggal</span>
+      <span class="muted">Income &amp; Expense</span>
     </div>
     <div class="filter-scroll" id="filterTabs"></div>
     <div id="dailyHistory"></div>
-    <div class="empty" id="empty">Belum ada pengeluaran tercatat di bulan ini.</div>
+    <div class="empty" id="empty">Belum ada transaksi tercatat di bulan ini.</div>
   </section>
 
   <!-- BUDGET SETTINGS -->
@@ -358,398 +399,4 @@ button{border:0;border-radius:13px;padding:14px 16px;font-size:14px;font-weight:
   <!-- BACKUP DATA -->
   <section class="card">
     <h2>🔒 Backup data</h2>
-    <p class="muted">Data tersimpan aman di browser perangkat ini. Ekspor JSON secara berkala agar catatan pengeluaran tidak hilang.</p>
-    <div class="actions">
-      <button class="secondary" id="exportBtn">Export backup</button>
-      <button class="secondary" id="importBtn">Import backup</button>
-    </div>
-    <input id="fileInput" type="file" accept="application/json,.json" hidden>
-    <button class="danger" id="resetBtn" style="width:100%;margin-top:10px">Reset semua data</button>
-  </section>
-
-  <div class="footer">Made for Owen · Mindful spending, stronger savings 🤍</div>
-</main>
-
-<script>
-const KEY = 'owenExpenseTracker_v1';
-const fmt = n => 'Rp' + Math.round(Number(n)).toLocaleString('id-ID');
-const $= id => document.getElementById(id);
-
-const DEFAULT_CATS = [
-  { id: 'transport', name: 'Transport/Bensin', icon: '⛽' },
-  { id: 'makan', name: 'Makan', icon: '🍛' },
-  { id: 'rokok', name: 'Rokok', icon: '🚬' },
-  { id: 'jajan', name: 'Jajan', icon: '🧋' },
-  { id: 'belanja', name: 'Belanja', icon: '🛍️' }
-];
-
-function todayISO(){
-  const d = new Date();
-  const off = d.getTimezoneOffset();
-  return new Date(d.getTime() - off*60000).toISOString().slice(0,10);
-}
-
-function getMonthKey(isoDate){
-  return isoDate.slice(0,7); // YYYY-MM
-}
-
-let state = {
-  budget: 3000000,
-  categories: [...DEFAULT_CATS],
-  expenses: [] // { id, catId, amount, note, date (YYYY-MM-DD), createdAt }
-};
-
-try {
-  const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
-  if (saved && typeof saved === 'object') {
-    state = { ...state, ...saved };
-    if (!Array.isArray(state.categories) || !state.categories.length) state.categories = [...DEFAULT_CATS];
-    if (!Array.isArray(state.expenses)) state.expenses = [];
-  }
-} catch(e){}
-
-let selectedCat = state.categories[0].id;
-let activeFilter = 'ALL'; // 'ALL' | 'TODAY' | catId
-let viewMonth = getMonthKey(todayISO());
-
-$('txDate').value = todayISO();
-
-function persist(){
-  localStorage.setItem(KEY, JSON.stringify(state));
-  render();
-}
-
-function formatMonthLabel(ym){
-  const [y, m] = ym.split('-').map(Number);
-  const d = new Date(y, m - 1, 1);
-  return d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }).toUpperCase();
-}
-
-function formatDayHeading(iso){
-  const t = todayISO();
-  const dObj = new Date();
-  dObj.setDate(dObj.getDate() - 1);
-  const yest = new Date(dObj.getTime() - dObj.getTimezoneOffset()*60000).toISOString().slice(0,10);
-
-  const [y, m, d] = iso.split('-').map(Number);
-  const full = new Date(y, m - 1, d).toLocaleDateString('id-ID', {
-    weekday: 'short', day: 'numeric', month: 'short'
-  });
-
-  if (iso === t) return `Hari Ini · ${full}`;
-  if (iso === yest) return `Kemarin · ${full}`;
-  return full;
-}
-
-function getCat(id){
-  return state.categories.find(c => c.id === id) || { id, name: 'Lainnya', icon: '🧾' };
-}
-
-function renderCategories(){
-  const grid = $('catGrid');
-  grid.innerHTML = state.categories.map(c => `
-    <button type="button" class="cat-btn ${selectedCat === c.id ? 'active' : ''}" data-cat="${c.id}">
-      <span class="ico">${c.icon}</span>
-      <span>${c.name}</span>
-    </button>
-  `).join('') + `
-    <button type="button" class="cat-btn" id="toggleAddCat">
-      <span class="ico">➕</span>
-      <span>Tambah</span>
-    </button>
-  `;
-
-  grid.querySelectorAll('[data-cat]').forEach(btn => {
-    btn.onclick = () => {
-      selectedCat = btn.dataset.cat;
-      renderCategories();
-    };
-  });
-
-  $('toggleAddCat').onclick = () => {
-    $('addCatBox').classList.toggle('open');
-  };
-}
-
-function render(){
-  $('monthLabel').textContent = formatMonthLabel(viewMonth);
-  $('budgetInput').value = state.budget;
-
-  const today = todayISO();
-  const monthExpenses = state.expenses.filter(x => getMonthKey(x.date) === viewMonth);
-  const totalMonth = monthExpenses.reduce((s, x) => s + x.amount, 0);
-  const totalToday = state.expenses
-    .filter(x => x.date === today)
-    .reduce((s, x) => s + x.amount, 0);
-
-  $('totalSpent').textContent = fmt(totalMonth);
-  $('todaySpent').textContent = fmt(totalToday);
-  $('txCount').textContent = monthExpenses.length + ' kali';
-
-  // Budget progress
-  const pct = state.budget > 0 ? (totalMonth / state.budget) * 100 : 0;
-  const clamped = Math.min(100, pct);
-  const fill = $('fill');
-  const pill = $('budgetPill');
-
-  fill.style.width = clamped + '%';
-  fill.classList.remove('warn', 'over');
-  pill.classList.remove('warn', 'over');
-
-  if (pct >= 100) {
-    fill.classList.add('over');
-    pill.classList.add('over');
-    pill.textContent = pct.toFixed(0) + '% OVER BUDGET';
-    $('remainingBudget').textContent = 'Lewat ' + fmt(totalMonth - state.budget);
-  } else if (pct >= 75) {
-    fill.classList.add('warn');
-    pill.classList.add('warn');
-    pill.textContent = pct.toFixed(1) + '% WASPADA';
-    $('remainingBudget').textContent = 'Sisa ' + fmt(state.budget - totalMonth);
-  } else {
-    pill.textContent = pct.toFixed(1) + '% TERPAKAI';
-    $('remainingBudget').textContent = 'Sisa ' + fmt(Math.max(0, state.budget - totalMonth));
-  }
-
-  $('budgetLabel').textContent = 'Budget ' + fmt(state.budget);
-
-  // Daily average calculation
-  const uniqueDays = new Set(monthExpenses.map(x => x.date)).size;
-  const avg = uniqueDays > 0 ? totalMonth / uniqueDays : 0;
-  $('dailyAvgLabel').textContent = 'Rata-rata ' + fmt(avg) + '/hari aktif';
-
-  // Category Breakdown
-  const catTotals = {};
-  monthExpenses.forEach(x => {
-    catTotals[x.catId] = (catTotals[x.catId] || 0) + x.amount;
-  });
-
-  const sortedCats = Object.entries(catTotals).sort((a, b) => b[1] - a[1]);
-  if (sortedCats.length) {
-    $('catEmpty').style.display = 'none';
-    const top = getCat(sortedCats[0][0]);
-    $('topCatBadge').textContent = `Terbesar: ${top.icon} ${top.name}`;
-    $('catBars').innerHTML = sortedCats.map(([cid, sum]) => {
-      const c = getCat(cid);
-      const share = totalMonth > 0 ? (sum / totalMonth) * 100 : 0;
-      return `
-        <div>
-          <div class="cat-row-top">
-            <span>${c.icon} <strong>${c.name}</strong> <span class="muted">(${share.toFixed(0)}%)</span></span>
-            <strong>${fmt(sum)}</strong>
-          </div>
-          <div class="mini-bar"><div class="mini-fill" style="width:${share}%"></div></div>
-        </div>
-      `;
-    }).join('');
-  } else {
-    $('catBars').innerHTML = '';
-    $('catEmpty').style.display = 'block';
-    $('topCatBadge').textContent = '-';
-  }
-
-  // Filter Tabs
-  const tabs = [
-    { id: 'ALL', label: 'Semua' },
-    { id: 'TODAY', label: 'Hari Ini' },
-    ...state.categories.map(c => ({ id: c.id, label: `${c.icon} ${c.name}` }))
-  ];
-  $('filterTabs').innerHTML = tabs.map(t => `
-    <button type="button" class="ftab ${activeFilter === t.id ? 'active' : ''}" data-filter="${t.id}">
-      ${t.label}
-    </button>
-  `).join('');
-
-  $('filterTabs').querySelectorAll('[data-filter]').forEach(btn => {
-    btn.onclick = () => {
-      activeFilter = btn.dataset.filter;
-      render();
-    };
-  });
-
-  // Daily Grouped History
-  let filtered = monthExpenses;
-  if (activeFilter === 'TODAY') {
-    filtered = state.expenses.filter(x => x.date === today);
-  } else if (activeFilter !== 'ALL') {
-    filtered = monthExpenses.filter(x => x.catId === activeFilter);
-  }
-
-  if (!filtered.length) {
-    $('dailyHistory').innerHTML = '';
-    $('empty').style.display = 'block';
-  } else {
-    $('empty').style.display = 'none';
-    const groups = {};
-    filtered.forEach(item => {
-      if (!groups[item.date]) groups[item.date] = [];
-      groups[item.date].push(item);
-    });
-
-    const sortedDates = Object.keys(groups).sort((a, b) => b.localeCompare(a));
-    $('dailyHistory').innerHTML = sortedDates.map(dateKey => {
-      const items = groups[dateKey].sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
-      const dayTotal = items.reduce((s, x) => s + x.amount, 0);
-      return `
-        <div class="day-group">
-          <div class="day-header">
-            <span>${formatDayHeading(dateKey)}</span>
-            <span class="day-total">-${fmt(dayTotal)}</span>
-          </div>
-          <ul class="history">
-            ${items.map(tx => {
-              const c = getCat(tx.catId);
-              const timeStr = tx.createdAt
-                ? new Date(tx.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-                : '';
-              return `
-                <li>
-                  <div class="tx-left">
-                    <div class="tx-ico">${c.icon}</div>
-                    <div class="tx-meta">
-                      <div class="tx-title">${tx.note ? tx.note : c.name}</div>
-                      <div class="tx-sub">${c.name}${timeStr ? ' · ' + timeStr : ''}</div>
-                    </div>
-                  </div>
-                  <div class="tx-right">
-                    <span class="negative">-${fmt(tx.amount)}</span>
-                    <button type="button" class="del-btn" data-del="${tx.id}" title="Hapus">×</button>
-                  </div>
-                </li>
-              `;
-            }).join('')}
-          </ul>
-        </div>
-      `;
-    }).join('');
-
-    $('dailyHistory').querySelectorAll('[data-del]').forEach(btn => {
-      btn.onclick = () => {
-        const id = btn.dataset.del;
-        state.expenses = state.expenses.filter(x => x.id !== id);
-        persist();
-      };
-    });
-  }
-}
-
-// Quick amount chips
-document.querySelectorAll('[data-add]').forEach(chip => {
-  chip.onclick = () => {
-    const cur = Number($('amount').value) || 0;
-    $('amount').value = cur + Number(chip.dataset.add);
-  };
-});
-
-// Add custom category
-$('saveCatBtn').onclick = () => {
-  const name = $('newCatName').value.trim();
-  const icon = $('newCatIcon').value.trim() || '📌';
-  if (!name) { alert('Masukkan nama kategori.'); return; }
-  const id = 'cat_' + Date.now();
-  state.categories.push({ id, name, icon });
-  selectedCat = id;
-  $('newCatName').value = '';
-  $('addCatBox').classList.remove('open');
-  renderCategories();
-  persist();
-};
-
-// Add expense
-$('addBtn').onclick = () => {
-  const amount = Math.floor(Number($('amount').value));
-  const note = $('note').value.trim();
-  const date = $('txDate').value || todayISO();
-
-  if (!Number.isFinite(amount) || amount <= 0) {
-    alert('Masukkan nominal pengeluaran yang valid.');
-    return;
-  }
-
-  state.expenses.unshift({
-    id: 'tx_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
-    catId: selectedCat,
-    amount,
-    note,
-    date,
-    createdAt: new Date().toISOString()
-  });
-
-  viewMonth = getMonthKey(date);
-  $('amount').value = '';
-  $('note').value = '';
-  persist();
-};
-
-// Month navigation
-$('prevMonth').onclick = () => {
-  const [y, m] = viewMonth.split('-').map(Number);
-  const d = new Date(y, m - 2, 1);
-  viewMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-  render();
-};
-
-$('nextMonth').onclick = () => {
-  const [y, m] = viewMonth.split('-').map(Number);
-  const d = new Date(y, m, 1);
-  viewMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-  render();
-};
-
-// Save budget
-$('saveBudget').onclick = () => {
-  const b = Math.floor(Number($('budgetInput').value));
-  if (!Number.isFinite(b) || b <= 0) {
-    alert('Limit budget harus lebih dari nol.');
-    return;
-  }
-  state.budget = b;
-  persist();
-  alert('Limit budget bulanan berhasil disimpan!');
-};
-
-// Export / Import / Reset
-$('exportBtn').onclick = () => {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'owen-expenses-backup.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-};
-
-$('importBtn').onclick = () => $('fileInput').click();
-
-$('fileInput').onchange = async e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  try {
-    const d = JSON.parse(await f.text());
-    if (typeof d.budget !== 'number' || !Array.isArray(d.expenses)) throw Error();
-    state = {
-      budget: d.budget,
-      categories: Array.isArray(d.categories) && d.categories.length ? d.categories : [...DEFAULT_CATS],
-      expenses: d.expenses
-    };
-    persist();
-    alert('Backup pengeluaran berhasil dipulihkan!');
-  } catch(err) {
-    alert('File backup tidak valid.');
-  }
-  e.target.value = '';
-};
-
-$('resetBtn').onclick = () => {
-  if (confirm('Yakin ingin menghapus seluruh riwayat pengeluaran? Export backup dulu jika masih dibutuhkan.')) {
-    state = { budget: 3000000, categories: [...DEFAULT_CATS], expenses: [] };
-    selectedCat = state.categories[0].id;
-    renderCategories();
-    persist();
-  }
-};
-
-renderCategories();
-render();
-</script>
-</body>
-</html>
+    
